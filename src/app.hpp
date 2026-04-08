@@ -23,10 +23,13 @@ struct SmokerInfo {
     int cyclesCompleted = 0;
 };
 
-constexpr int SMOKER_COUNT = 15;
-constexpr int TAMPER_COUNT = 2;
-constexpr int MATCHBOX_COUNT = 2;
-constexpr int MAX_CYCLES = 15;
+struct AppConfig {
+    int smokerCount = 15;
+    int tamperCount = 2;
+    int matchboxCount = 2;
+    int maxCycles = 15;
+};
+
 constexpr int SIMULATION_SPEED_MULTIPLIER = 1;
 
 constexpr auto TAMPING_TIME = std::chrono::milliseconds(700);

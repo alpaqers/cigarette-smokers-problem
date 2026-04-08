@@ -1,15 +1,42 @@
 #include "app.hpp"
 #include "ui.hpp"
 
-#include <ncurses.h>
 #include <atomic>
+#include <iostream>
+#include <limits>
+#include <ncurses.h>
 #include <thread>
 #include <vector>
 
+int readPositiveInt(const std::string& label) {
+    int value = 0;
+
+    while (true) {
+        std::cout << label;
+        std::cin >> value;
+
+        if (std::cin.fail() || value <= 0) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Please enter a positive integer.\n";
+            continue;
+        }
+
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return value;
+    }
+}
+
 int main() {
-    Ui ui(SMOKER_COUNT, TAMPER_COUNT, MATCHBOX_COUNT);
-    FairResource tampers("tamper", TAMPER_COUNT, ui, true);
-    FairResource matches("matches", MATCHBOX_COUNT, ui, false);
+    AppConfig config;
+    config.smokerCount = readPositiveInt("Enter number of smokers: ");
+    config.tamperCount = readPositiveInt("Enter number of tampers: ");
+    config.matchboxCount = readPositiveInt("Enter number of matches resources: ");
+    config.maxCycles = readPositiveInt("Enter number of cycles: ");
+
+    Ui ui(config);
+    FairResource tampers("tamper", config.tamperCount, ui, true);
+    FairResource matches("matches", config.matchboxCount, ui, false);
 
     std::atomic<bool> stopFlag{false};
     std::vector<std::thread> threads;
@@ -22,7 +49,7 @@ int main() {
     nodelay(stdscr, TRUE);
     initColors();
 
-    for (int i = 1; i <= SMOKER_COUNT; ++i) {
+    for (int i = 1; i <= config.smokerCount; ++i) {
         threads.emplace_back(
             smokerWorker,
             i,
@@ -30,7 +57,7 @@ int main() {
             std::ref(matches),
             std::ref(ui),
             std::ref(stopFlag),
-            MAX_CYCLES
+            config.maxCycles
         );
     }
 
@@ -46,7 +73,7 @@ int main() {
 
         ui.draw();
 
-        if (ui.getFinishedCount() == SMOKER_COUNT) {
+        if (ui.getFinishedCount() == config.smokerCount) {
             break;
         }
 

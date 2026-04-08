@@ -3,8 +3,11 @@
 #include <algorithm>
 #include <ncurses.h>
 
-Ui::Ui(int smokerCount, int tampers, int matches)
-    : smokers(smokerCount), freeTampers(tampers), freeMatches(matches) {}
+Ui::Ui(const AppConfig& config)
+    : config(config),
+      smokers(config.smokerCount),
+      freeTampers(config.tamperCount),
+      freeMatches(config.matchboxCount) {}
 
 void Ui::setState(int smokerId, SmokerState state) {
     std::lock_guard<std::mutex> lock(mtx);
@@ -69,9 +72,9 @@ void Ui::draw() const {
         2,
         2,
         "Smokers: %d | Tampers: %d | Matches: %d | Time scale: x%d",
-        SMOKER_COUNT,
-        TAMPER_COUNT,
-        MATCHBOX_COUNT,
+        config.smokerCount,
+        config.tamperCount,
+        config.matchboxCount,
         SIMULATION_SPEED_MULTIPLIER
     );
 
@@ -84,7 +87,7 @@ void Ui::draw() const {
         tamperQueueSize,
         matchesQueueSize,
         finishedCount,
-        SMOKER_COUNT
+        config.smokerCount
     );
 
     mvhline(4, 0, '=', cols);

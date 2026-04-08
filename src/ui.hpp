@@ -9,7 +9,7 @@
 
 class Ui {
 public:
-    Ui(int smokerCount, int tampers, int matches);
+    Ui(const AppConfig& config);
 
     void setState(int smokerId, SmokerState state);
     void incrementCycles(int smokerId);
@@ -24,6 +24,7 @@ public:
 
 private:
     mutable std::mutex mtx;
+    AppConfig config;
     std::vector<SmokerInfo> smokers;
     std::deque<std::string> logs;
     int freeTampers = 0;
