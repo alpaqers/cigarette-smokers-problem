@@ -164,10 +164,6 @@ public:
         int rows, cols;
         getmaxyx(stdscr, rows, cols);
 
-        attron(A_BOLD);
-        mvprintw(0, 2, "Problem palaczy - ncurses");
-        attroff(A_BOLD);
-
         mvprintw(1, 2, "q = wyjscie");
         mvprintw(
             2,
@@ -423,7 +419,7 @@ int main() {
         }
 
         if (ch == KEY_RESIZE) {
-            // wystarczy przerysować ekran w następnej iteracji
+            
         }
 
         ui.draw();
